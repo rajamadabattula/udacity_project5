@@ -6,8 +6,8 @@ import operators
 import helpers
 
 # Defining the plugin class
-class SparkifyPlugin(AirflowPlugin):
-    name = "sparkify_plugin"
+class UdacityPlugin(AirflowPlugin):
+    name = "udacity_plugin"
     operators = [
         operators.StageToRedshiftOperator,
         operators.LoadFactOperator,
