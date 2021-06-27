@@ -2,10 +2,10 @@ from datetime import datetime, timedelta
 import os
 from airflow import DAG
 from airflow.operators.dummy_operator import DummyOperator
-from airflow.operators import (StageToRedshiftOperator, LoadFactOperator,
-                                LoadDimensionOperator, DataQualityOperator,PostgresOperator)
+from airflow.operators.spark_plugin import (StageToRedshiftOperator, LoadFactOperator,
+                                LoadDimensionOperator, DataQualityOperator)
 from helpers import SqlQueries
-
+from airflow.providers.postgres.operators.postgres import PostgresOperator
 # AWS_KEY = os.environ.get('AWS_KEY')
 # AWS_SECRET = os.environ.get('AWS_SECRET')
 
@@ -18,6 +18,7 @@ default_args = {
     'catchup': False,
     'email_on_retry': False
 }
+
 
 dag = DAG('udac_example_dag',
           default_args=default_args,
@@ -68,6 +69,11 @@ load_songplays_table = LoadFactOperator(
 
 load_user_dimension_table = LoadDimensionOperator(
     task_id='Load_user_dim_table',
+    dag=dag
+)
+
+load_user_dimension_table = LoadDimensionOperator(
+    task_id='Load_user_dim_table',
     dag=dag,
     table = "users",
     select_sql = SqlQueries.user_table_insert,
@@ -81,6 +87,7 @@ load_song_dimension_table = LoadDimensionOperator(
     select_sql=SqlQueries.song_table_insert,
     dag=dag
 )
+
 load_artist_dimension_table = LoadDimensionOperator(
     task_id='Load_artist_dim_table',
     redshift_conn_id='redshift',
