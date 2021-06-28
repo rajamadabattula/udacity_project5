@@ -3,8 +3,7 @@ import os
 from airflow import DAG
 from airflow.operators.dummy_operator import DummyOperator
 from airflow.operators import (StageToRedshiftOperator, LoadFactOperator,
-                                LoadDimensionOperator, DataQualityOperator )
-from airflow.operators.postgres_operator import PostgresOperator
+                               LoadDimensionOperator, DataQualityOperator)
 from helpers import SqlQueries
 
 default_args = {
@@ -22,16 +21,9 @@ dag = DAG('udac_example_dag',
           description='Load and transform data in Redshift with Airflow',
           schedule_interval='0 * * * *',
           max_active_runs=1
-        )
+          )
 
 start_operator = DummyOperator(task_id='Begin_execution',  dag=dag)
-
-create_tables = PostgresOperator(
-    task_id="create_tables",
-    dag=dag,
-    postgres_conn_id="redshift",
-    sql="create_tables.sql"
-)
 
 stage_events_to_redshift = StageToRedshiftOperator(
     task_id='Stage_events',
@@ -109,9 +101,8 @@ run_quality_checks = DataQualityOperator(
 
 end_operator = DummyOperator(task_id='Stop_execution',  dag=dag)
 
-start_operator >> create_tables
-create_tables >> stage_events_to_redshift >> load_songplays_table
-create_tables >> stage_songs_to_redshift >> load_songplays_table
+start_operator >> stage_events_to_redshift >> load_songplays_table
+start_operator >> stage_songs_to_redshift >> load_songplays_table
 load_songplays_table >> load_user_dimension_table >> run_quality_checks
 load_songplays_table >> load_song_dimension_table >> run_quality_checks
 load_songplays_table >> load_artist_dimension_table >> run_quality_checks
