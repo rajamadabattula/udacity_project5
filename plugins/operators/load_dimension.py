@@ -3,7 +3,7 @@ from airflow.models import BaseOperator
 from airflow.utils.decorators import apply_defaults
 
 class LoadDimensionOperator(BaseOperator):
-     """
+    """
     Loads dimension table in Redshift from data in staging table(s)
     
     redshift_conn_id: Redshift connection ID
