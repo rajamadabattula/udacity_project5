@@ -18,7 +18,6 @@ class DataQualityOperator(BaseOperator):
                  redshift_conn_id = "",
                  test_query="",
                  expected_result="",
-                 
                  *args, **kwargs):
 
         super(DataQualityOperator, self).__init__(*args, **kwargs)
@@ -38,3 +37,5 @@ class DataQualityOperator(BaseOperator):
             """)
         else:
             self.log.info("Data quality check passed")
+            
+  

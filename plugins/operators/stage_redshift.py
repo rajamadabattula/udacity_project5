@@ -17,7 +17,6 @@ class StageToRedshiftOperator(BaseOperator):
     :param region: AWS Region where the source data is located
     """
     ui_color = '#358140'
-    
     copy_sql = """
         COPY {}
         FROM '{}'
@@ -26,6 +25,7 @@ class StageToRedshiftOperator(BaseOperator):
         REGION AS '{}'
         FORMAT as json '{}'
     """
+
     @apply_defaults
     def __init__(self,
                  redshift_conn_id="",
@@ -34,7 +34,7 @@ class StageToRedshiftOperator(BaseOperator):
                  s3_bucket="",
                  s3_key="",
                  region="",
-                 copy_json_option="auto"
+                 copy_json_option="auto",
                  *args, **kwargs):
 
         super(StageToRedshiftOperator, self).__init__(*args, **kwargs)
@@ -52,8 +52,8 @@ class StageToRedshiftOperator(BaseOperator):
         credentials = aws_hook.get_credentials()
         redshift = PostgresHook(postgres_conn_id=self.redshift_conn_id)
         
-        self.log.info("Clearing data from destination Redshift table")
-        redshift.run("DELETE FROM {}".format(self.table))
+#         self.log.info("Clearing data from destination Redshift table")
+#         redshift.run("DELETE FROM {}".format(self.table))
         
         self.log.info("Copying data from S3 to Redshift")
         rendered_key = self.s3_key.format(**context)
@@ -67,7 +67,6 @@ class StageToRedshiftOperator(BaseOperator):
             self.copy_json_option
         )
         redshift.run(formatted_sql)
-
 
 
 
